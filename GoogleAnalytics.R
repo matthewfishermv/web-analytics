@@ -1,5 +1,4 @@
-packages <- c("googleAnalyticsR",
-              "dplyr",
+packages <- c("dplyr",
               "lubridate",
               "ggplot2",
               "randomForest",
@@ -12,27 +11,21 @@ for (p in packages) {
   }
 }
 
-# Authenticate.
-googleAuthR::gar_set_client(json = ".secrets/client_secret_306994286184-usjggu1j6n5v60d4bbt7iv9aao8323ju.apps.googleusercontent.com.json")
-ga_auth(email = "ga-analysis@airy-ripple-344600.iam.gserviceaccount.com",
-        json_file = ".secrets/airy-ripple-344600-f828fd6663de.json")
+source("./src/google.R")
 
-# Select the account.
-accounts <- ga_account_list()
-account <- accounts$viewId
+account <- get_account()
 
-# Look at a single day.
-ga_start_date <- today() - years(1)
-ga_end_date <- today()
-
-data <- google_analytics(
-  account,
-  segments = segment_ga4("AllTraffic", segment_id = "gaid::-1"),
-  date_range = c(ga_start_date, ga_end_date),
-  metrics = c("pageviews"),
-  dimensions = c("source", "browser", "sessionDurationBucket")
-) %>%
-  as_tibble()
+# Get data from the past year.
+start_date <- today() - years(1)
+end_date <- today()
+data <-
+  get_data(
+    account,
+    c("pageviews"),
+    c("source", "browser", "sessionDurationBucket"),
+    start_date = start_date,
+    end_date = end_date
+  )
 
 data %>%
   slice_max(order_by = source, n = 10) %>%
@@ -53,7 +46,9 @@ test.data <- data[751:1000,]
 
 set.seed(3487)
 model <-
-  train(sessionLength ~ source + browser + pageviews,
-        data = train.data,
-        method = "rf",
-        trControl = trainControl(method = 'cv', number = 10))
+  train(
+    sessionLength ~ source + browser + pageviews,
+    data = train.data,
+    method = "rf",
+    trControl = trainControl(method = 'cv', number = 10)
+  )
