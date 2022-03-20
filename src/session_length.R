@@ -1,4 +1,4 @@
-packages <- c("dplyr", "ggplot2", "lubridate")
+packages <- c("dplyr", "ggplot2", "lubridate", "ggthemes")
 
 for (p in packages) {
   if (!require(p, character.only = TRUE)) {
@@ -9,16 +9,22 @@ for (p in packages) {
 
 plot_session_length <- function(data, type = "histogram") {
   if (type == "histogram") {
-    hist(data$processed$sessionDurationBucket,
-         main = paste0("Session Duration\n",
-                       paste(
-                         format(ymd(
-                           as.Date(data$parameters$start_date)
-                         ), "%m/%d/%Y"),
-                         "-",
-                         format(ymd(as.Date(
-                           data$parameters$end_date
-                         )), "%m/%d/%Y")
-                       )))
+    data$processed %>%
+      ggplot(aes(x = sessionDurationBucket, fill = 1)) +
+      geom_histogram(binwidth = 200) +
+      theme_gdocs() +
+      labs(
+        title = element_text("Session Length"),
+        subtitle = paste(format(ymd(
+          as.Date(data$parameters$start_date)
+        ), "%m/%d/%Y"),
+        "-",
+        format(ymd(
+          as.Date(data$parameters$end_date)
+        ), "%m/%d/%Y"))
+      ) +
+      xlab("Session Length (Minutes)") +
+      ylab("Frequency") +
+      theme(legend.position = "none")
   }
 }
