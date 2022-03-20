@@ -9,22 +9,26 @@ for (p in packages) {
 
 plot_session_length <- function(data, type = "histogram") {
   if (type == "histogram") {
-    data$processed %>%
+    p <- data$processed %>%
       ggplot(aes(x = sessionDurationBucket, fill = 1)) +
       geom_histogram(binwidth = 200) +
-      theme_gdocs() +
-      labs(
-        title = element_text("Session Length"),
-        subtitle = paste(format(ymd(
-          as.Date(data$parameters$start_date)
-        ), "%m/%d/%Y"),
-        "-",
-        format(ymd(
-          as.Date(data$parameters$end_date)
-        ), "%m/%d/%Y"))
-      ) +
+      labs(title = element_text("Session Length"),
+           subtitle = paste(format(ymd(
+             as.Date(data$parameters$start_date)
+           ), "%m/%d/%Y"),
+           "-",
+           format(ymd(
+             as.Date(data$parameters$end_date)
+           ), "%m/%d/%Y"))) +
       xlab("Session Length (Minutes)") +
       ylab("Frequency") +
+      theme_gdocs() +
       theme(legend.position = "none")
+    
+    return(p)
   }
+}
+
+wrap_session_dimension <- function(p, dimension) {
+  p + facet_wrap(as.formula(paste("~", dimension)))
 }

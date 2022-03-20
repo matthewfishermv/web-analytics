@@ -26,5 +26,7 @@ data <-
     end_date = end_date
   )
 
-# Visualize session duration
-plot_session_length(data, type = "histogram")
+# Visualize session length.
+p <- plot_session_length(data, type = "histogram")
+p
+wrap_session_dimension(p, "browser")
