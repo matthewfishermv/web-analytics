@@ -12,6 +12,7 @@ for (p in packages) {
 }
 
 source("./src/google.R")
+source("./src/session_length.R")
 
 account <- get_account()
 
@@ -27,22 +28,19 @@ data <-
     end_date = end_date
   )
 
-data %>%
-  slice_max(order_by = source, n = 10) %>%
-  mutate(source = reorder(source, pageviews)) %>%
-  ggplot(aes(x = source, y = pageviews)) +
-  geom_bar(stat = "identity") +
-  coord_flip() +
-  labs(title = "Top 10 Sources") +
-  facet_wrap( ~ browser, scales = "free")
+# Wrangle the data.
+data <- data %>%
+  mutate(sessionDurationBucket = as.numeric(sessionDurationBucket))
 
 # Categorize session length.
+plot_session_length(data, type = "histogram")
+
 data$sessionLength <-
-  as.factor(ifelse(data$sessionDurationBucket > 60, "Long", "Short"))
+  as.factor(ifelse(data$sessionDurationBucket > breakpoint, "Long", "Short"))
 
 # Create test-train split.
-train.data <- data[1:750,]
-test.data <- data[751:1000,]
+train.data <- data[1:750, ]
+test.data <- data[751:1000, ]
 
 set.seed(3487)
 model <-
