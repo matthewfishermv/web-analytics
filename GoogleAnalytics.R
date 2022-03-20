@@ -1,7 +1,9 @@
 packages <- c("googleAnalyticsR",
               "dplyr",
               "lubridate",
-              "ggplot2")
+              "ggplot2",
+              "randomForest",
+              "caret")
 
 for (p in packages) {
   if (!require(p, character.only = TRUE)) {
@@ -29,7 +31,8 @@ data <- google_analytics(
   date_range = c(ga_start_date, ga_end_date),
   metrics = c("pageviews"),
   dimensions = c("source", "browser", "sessionDurationBucket")
-)
+) %>%
+  as_tibble()
 
 data %>%
   slice_max(order_by = source, n = 10) %>%
@@ -37,10 +40,20 @@ data %>%
   ggplot(aes(x = source, y = pageviews)) +
   geom_bar(stat = "identity") +
   coord_flip() +
-  labs(
-    title = "Top 10 Sources"
-  ) +
-  facet_wrap(~ browser, scales = "free")
+  labs(title = "Top 10 Sources") +
+  facet_wrap( ~ browser, scales = "free")
 
 # Categorize session length.
-data$sessionLength <- ifelse(data$sessionDurationBucket > 60, "Long", "Short")
+data$sessionLength <-
+  as.factor(ifelse(data$sessionDurationBucket > 60, "Long", "Short"))
+
+# Create test-train split.
+train.data <- data[1:750,]
+test.data <- data[751:1000,]
+
+set.seed(3487)
+model <-
+  train(sessionLength ~ source + browser + pageviews,
+        data = train.data,
+        method = "rf",
+        trControl = trainControl(method = 'cv', number = 10))
