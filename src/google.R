@@ -21,19 +21,37 @@ get_account <- function() {
   return (account)
 }
 
-get_data <-
-  function(account,
-           metrics,
-           dimensions,
-           start_date,
-           end_date) {
-    google_analytics(
-      account,
-      segments = segment_ga4("AllTraffic", segment_id = "gaid::-1"),
-      date_range = c(start_date, end_date),
-      metrics = c("pageviews"),
-      max = -1,
-      dimensions = c("source", "browser", "sessionDurationBucket")
-    ) %>%
-      as_tibble()
-  }
+get_data <- function(account,
+                     metrics,
+                     dimensions,
+                     start_date,
+                     end_date) {
+  # Retrieve data.
+  data <- google_analytics(
+    account,
+    segments = segment_ga4("AllTraffic", segment_id = "gaid::-1"),
+    date_range = c(start_date, end_date),
+    metrics = c("pageviews"),
+    max = -1,
+    dimensions = c("source", "browser", "sessionDurationBucket")
+  ) %>%
+    as_tibble()
+  
+  # Wrangle data.
+  processed <- data %>%
+    mutate(source = as.factor(source)) %>%
+    mutate(browser = as.factor(browser)) %>%
+    mutate(sessionDurationBucket = as.numeric(sessionDurationBucket)) %>%
+    mutate(segment = as.factor(segment))
+  
+  # Return data.
+  return (list(
+    raw = data,
+    processed = processed,
+    parameters = list(
+      account = account,
+      start_date = start_date,
+      end_date = end_date
+    )
+  ))
+}

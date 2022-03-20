@@ -7,10 +7,9 @@ for (p in packages) {
   }
 }
 
-plot_session_length <-
-  function(data, type = "histogram") {
-    if (type == "histogram") {
-      hist(data$sessionDurationBucket,
-           main = "Session Duration")
-    }
+plot_session_length <- function(data, type = "histogram") {
+  if (type == "histogram") {
+    hist(data$processed$sessionDurationBucket,
+         main = "Session Duration")
   }
+}

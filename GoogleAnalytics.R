@@ -1,8 +1,6 @@
 packages <- c("dplyr",
               "lubridate",
-              "ggplot2",
-              "randomForest",
-              "caret")
+              "ggplot2")
 
 for (p in packages) {
   if (!require(p, character.only = TRUE)) {
@@ -28,25 +26,5 @@ data <-
     end_date = end_date
   )
 
-# Wrangle the data.
-data <- data %>%
-  mutate(sessionDurationBucket = as.numeric(sessionDurationBucket))
-
-# Categorize session length.
+# Visualize session duration
 plot_session_length(data, type = "histogram")
-
-data$sessionLength <-
-  as.factor(ifelse(data$sessionDurationBucket > breakpoint, "Long", "Short"))
-
-# Create test-train split.
-train.data <- data[1:750, ]
-test.data <- data[751:1000, ]
-
-set.seed(3487)
-model <-
-  train(
-    sessionLength ~ source + browser + pageviews,
-    data = train.data,
-    method = "rf",
-    trControl = trainControl(method = 'cv', number = 10)
-  )
