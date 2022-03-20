@@ -31,18 +31,19 @@ get_data <- function(account,
     account,
     segments = segment_ga4("AllTraffic", segment_id = "gaid::-1"),
     date_range = c(start_date, end_date),
-    metrics = c("pageviews"),
+    metrics = metrics,
     max = -1,
-    dimensions = c("source", "browser", "sessionDurationBucket")
+    dimensions = dimensions
   ) %>%
     as_tibble()
   
   # Wrangle data.
   processed <- data %>%
-    mutate(source = as.factor(source)) %>%
-    mutate(browser = as.factor(browser)) %>%
-    mutate(sessionDurationBucket = as.numeric(sessionDurationBucket)) %>%
-    mutate(segment = as.factor(segment))
+    mutate_at(vars(one_of('source')), as.factor) %>%
+    mutate_at(vars(one_of('browser')), as.factor) %>%
+    mutate_at(vars(one_of('sessionDurationBucket')), as.numeric) %>%
+    mutate_at(vars(one_of('segment')), as.factor) %>%
+    mutate_at(vars(one_of('date')), as.Date)
   
   # Return data.
   return (list(

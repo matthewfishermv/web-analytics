@@ -11,13 +11,14 @@ for (p in packages) {
 
 source("./src/google.R")
 source("./src/session_length.R")
+source("./src/visits.R")
 
 account <- get_account()
 
-# Get data from the past year.
+# Get session length data from the past year.
 start_date <- today() - years(1)
 end_date <- today()
-data <-
+sessions <-
   get_data(
     account,
     c("pageviews"),
@@ -27,6 +28,22 @@ data <-
   )
 
 # Visualize session length.
-p <- plot_session_length(data, type = "histogram")
+p <- plot_session_length(sessions, type = "histogram")
 p
 wrap_session_dimension(p, "browser")
+
+# Get visit data from the past year.
+start_date <- today() - years(5)
+end_date <- today()
+visits <-
+  get_data(
+    account,
+    c("uniquePageviews"),
+    c("date", "browser"),
+    start_date = start_date,
+    end_date = end_date
+  )
+
+# Visualize visits.
+p <- plot_visits(visits)
+p

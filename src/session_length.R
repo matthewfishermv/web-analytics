@@ -20,8 +20,8 @@ plot_session_length <- function(data, type = "histogram") {
            format(ymd(
              as.Date(data$parameters$end_date)
            ), "%m/%d/%Y"))) +
-      xlab("Session Length (Minutes)") +
-      ylab("Frequency") +
+      xlab("\nSession Length (Minutes)") +
+      ylab("Frequency\n") +
       theme_gdocs() +
       theme(legend.position = "none")
     
