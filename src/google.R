@@ -9,9 +9,12 @@ for (p in packages) {
 }
 
 authenticate <- function() {
-  googleAuthR::gar_set_client(json = ".secrets/client_secret_306994286184-usjggu1j6n5v60d4bbt7iv9aao8323ju.apps.googleusercontent.com.json")
-  ga_auth(email = "ga-analysis@airy-ripple-344600.iam.gserviceaccount.com",
-          json_file = ".secrets/airy-ripple-344600-f828fd6663de.json")
+  client_email_file <- ".secrets/google-client-email.txt"
+  email <-
+    readChar(client_email_file, file.info(client_email_file)$size)
+  googleAuthR::gar_set_client(json = ".secrets/google-client-credentials.json")
+  ga_auth(email = email,
+          json_file = ".secrets/google-oauth-credentials.json")
 }
 
 get_account <- function() {
