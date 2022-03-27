@@ -25,7 +25,7 @@ Once you are done with the prerequisites, you can start using the utilities by d
 4. Open the `WebAnalytics.R` file.
 5. Highlight portions of the script to run.
 
-## Folder Folder Structure
+## Folder Structure
 
 ```
 /           Project root folder. Contains R project and start script WebAnalytics.R.
