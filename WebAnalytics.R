@@ -12,6 +12,7 @@ for (p in packages) {
 source("./src/google.R")
 source("./src/session_length.R")
 source("./src/visits.R")
+source("./src/bounces.R")
 
 account <- get_account()
 
@@ -46,4 +47,23 @@ visits <-
 
 # Visualize visits.
 p <- plot_visits(visits)
+p
+
+# Get bounce data form the past year.
+start_date <- today() - years(5)
+end_date <- today()
+bounces <-
+  get_data(
+    account,
+    c("bounces"),
+    c("date", "pagePathLevel1"),
+    start_date = start_date,
+    end_date = end_date
+  )
+
+# Visualize bounces.
+p <- plot_bounces(bounces)
+p
+
+p <- plot_highest_bounces(bounces)
 p
